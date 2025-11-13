@@ -1,0 +1,21 @@
+# The main pipeline for saas_billing_analytics
+
+resources:
+  pipelines:
+    saas_billing_analytics_etl:
+      name: saas_billing_analytics_etl
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      root_path: "../src/saas_billing_analytics_etl"
+
+      libraries:
+        - glob:
+#            include: ../src/saas_billing_analytics_etl/transformations/**
+            include: ../src/saas_billing_analytics_etl/**
+
+      environment:
+        dependencies:
+          # We include every dependency defined by pyproject.toml by defining an editable environment
+          # that points to the folder where pyproject.toml is deployed.
+          - --editable ${workspace.file_path}

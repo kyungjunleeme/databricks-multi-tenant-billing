@@ -1,8 +1,9 @@
-# app.py
+import os
 import logging
 
 import pandas as pd
 import streamlit as st
+from databricks.sdk.core import Config, oauth_service_principal
 from databricks import sql
 
 from config import settings
@@ -24,20 +25,25 @@ def query_df(sql_text: str) -> pd.DataFrame:
     네가 직접 테스트해서 성공한 방식과 동일한 패턴으로,
     Databricks SQL Connector를 사용해 DataFrame을 조회한다.
     """
-    if not settings.sql_server_hostname or not settings.sql_http_path:
-        raise RuntimeError(
-            "DATABRICKS_SERVER_HOSTNAME 또는 DATABRICKS_HTTP_PATH 가 비어 있습니다.\n"
-            "예: server_hostname='dbc-ac824534-b453.cloud.databricks.com', "
-            "http_path='/sql/1.0/warehouses/47d1cae6296e83ca'"
+    if not settings.databricks_token:
+        def credential_provider():
+            config = Config(
+                host=f"{settings.sql_server_hostname}",
+                client_id=os.getenv("DATABRICKS_CLIENT_ID"),
+                client_secret=os.getenv("DATABRICKS_CLIENT_SECRET"))
+            return oauth_service_principal(config)
+
+        connection = sql.connect(
+            server_hostname=settings.sql_server_hostname,
+            http_path=settings.sql_http_path,
+            credentials_provider=credential_provider,
         )
-
-    # ⬇⬇⬇ 이 부분이 네가 확인했던 코드와 1:1 대응 ⬇⬇⬇
-    connection = sql.connect(
-        server_hostname=settings.sql_server_hostname,
-        http_path=settings.sql_http_path,
-        access_token=settings.databricks_token,
-    )
-
+    else:
+        connection = sql.connect(
+            server_hostname=settings.sql_server_hostname,
+            http_path=settings.sql_http_path,
+            access_token=settings.databricks_token,
+        )
     try:
         cursor = connection.cursor()
         cursor.execute(sql_text)
@@ -47,7 +53,6 @@ def query_df(sql_text: str) -> pd.DataFrame:
     finally:
         cursor.close()
         connection.close()
-
 
 @st.cache_data
 def load_billing_data() -> pd.DataFrame:

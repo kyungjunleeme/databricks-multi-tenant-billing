@@ -7,13 +7,19 @@ from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
 from databricks.vector_search.client import VectorSearchClient  # ★ 새로 사용
 from config import settings
 
+
+
 CTX_MAX_CHUNKS = 6  # 프롬프트에 넣을 상위 청크 수
 
-# --- 공통 Databricks SDK 클라이언트 ---
-_w = WorkspaceClient(
-    host=settings.databricks_host,
-    token=settings.databricks_token,
-)
+# --- 공통 Databricks SDK 클라이언트 ----
+_w = settings.get_workspace_client()
+_v = settings.get_vectors_search_client()
+
+
+# _w = WorkspaceClient(
+#     host=settings.databricks_host,
+#     token=settings.databricks_token,
+# )
 
 # --- 1) 임베딩: serving_endpoints.query(name, input=...) ---
 def embed_texts(texts: list[str]) -> list[list[float]]:
@@ -69,14 +75,14 @@ def vs_query_with_vector(q_vec: list[float], k: int):
     settings.vs_endpoint + settings.vs_index_name 를 사용.
     """
     # 1) 클라이언트 생성 (노트북/로컬 동일하게 PAT + host)
-    client = VectorSearchClient(
-        workspace_url=settings.databricks_host,
-        personal_access_token=settings.databricks_token,
-    )
+    # client = VectorSearchClient(
+    #     workspace_url=settings.databricks_host,
+    #     personal_access_token=settings.databricks_token,
+    # )
     # 2) 인덱스 핸들 얻기
-    index = client.get_index(
+    index = _v.get_index(
         endpoint_name=settings.vs_endpoint,
-        index_name=settings.vsearch_index,
+        index_name=settings.vs_index_name,
     )
     # 3) similarity_search 로 쿼리
     resp = index.similarity_search(

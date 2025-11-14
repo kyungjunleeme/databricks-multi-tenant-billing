@@ -7,19 +7,19 @@ load_dotenv()
 
 class Settings(BaseSettings):
     # 기본 Databricks 접속 정보
-    databricks_host: str = os.getenv("DATABRICKS_HOST", "https://dbc-ac824534-b453.cloud.databricks.com")
-    databricks_token: str = os.getenv("DATABRICKS_TOKEN", "")  # PAT
+    databricks_host: str = os.getenv("DATABRICKS_HOST", "")
+    databricks_token: str = os.getenv("DATABRICKS_TOKEN", "")
 
     # Unity Catalog 위치
     catalog: str = os.getenv("UC_CATALOG", "saas_billing_analytics")
-    uc_schema: str = os.getenv("UC_SCHEMA", "prod")  # 이름은 uc_schema로 유지
+    uc_schema: str = os.getenv("UC_SCHEMA", "prod")
     sql_server_hostname: str = os.getenv(
         "DATABRICKS_SERVER_HOSTNAME",
-        "",  # 예: "dbc-ac824534-b453.cloud.databricks.com"
+        "",
     )
     sql_http_path: str = os.getenv(
         "DATABRICKS_HTTP_PATH",
-        "",  # 예: "/sql/1.0/warehouses/47d1cae6296e83ca"
+        "",
     )
 
     @property

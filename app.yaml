@@ -7,5 +7,11 @@ command: [
 env:
   - name: STREAMLIT_BROWSER_GATHER_USAGE_STATS
     value: "false"
+  - name: DATABRICKS_SERVER_HOSTNAME
+    value: "https://dbc-ac824534-b453.cloud.databricks.com"  # Dont'forget to add https://
+  - name: DATABRICKS_HOST
+    value: "https://dbc-ac824534-b453.cloud.databricks.com"  # Dont'forget to add https://
+  - name: DATABRICKS_HTTP_PATH
+    value: "/sql/1.0/warehouses/47d1cae6296e83ca"
   - name: "SERVING_ENDPOINT"
     valueFrom: "serving-endpoint"

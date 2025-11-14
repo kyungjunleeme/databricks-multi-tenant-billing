@@ -33,16 +33,14 @@ class Settings(BaseSettings):
     # Vector Search 설정
     # 1) endpoint 기반이라면:
     vs_endpoint: str = os.getenv("VS_ENDPOINT", "billing-vs-endpoint")   # 네가 만든 엔드포인트 이름
-    vs_index_name: str = os.getenv("VS_INDEX_NAME", "billing_tenant_monthly_vs_index")  # 실제 UI에서 확인해서 맞춰줘
     vsearch_index: str = os.getenv(
         "VSEARCH_INDEX",
-        f"{catalog}.{schema}.billing_tenant_monthly_vs_index",
+        f"{catalog}.{schema}.billing_billing_vs_index",
     )
 
     # 2) UC 인덱스 풀네임으로도 필요할 수 있으니 property로 하나 만들어 둠
     @property
     def vsearch_index_fqn(self) -> str:
-        # saas_billing_analytics.prod.billing_tenant_monthly_vs_index
         return f"{self.catalog}.{self.schema}.{self.vs_index_name}"
 
     # LLM / 임베딩 엔드포인트

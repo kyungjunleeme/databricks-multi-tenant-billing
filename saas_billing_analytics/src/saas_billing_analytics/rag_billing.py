@@ -4,7 +4,7 @@ import requests
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
 
-from config import settings  # databricks_host, databricks_token, vsearch_index, gen_endpoint, etc.
+from config import settings
 
 
 _w = WorkspaceClient(
@@ -82,7 +82,6 @@ def vs_query_vector(q_vec: list[float], k: int, tenant_filter: str | None = None
     }
     if constraints:
         payload["filters"] = {"constraints": constraints}
-
     r = requests.post(url, headers=_H(), data=json.dumps(payload))
     r.raise_for_status()
     body = r.json()
